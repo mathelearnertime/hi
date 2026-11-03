@@ -31,4 +31,44 @@ function navigate(value, addHistory = true) {
  document.getElementById("home").style.display = "none";
  currentUrl.textContent = url;
  address.value = url;
- blocked.hidden = true
+ blocked.hidden = true;
+ 
+ viewer.src = proxyUrl;
+ 
+ if (addHistory) {
+ historyList = historyList.slice(0, historyIndex + 1);
+ historyList.push(url);
+ historyIndex = historyList.length - 1;
+ }
+ document.getElementById("status").textContent = "Viewing website";
+}
+
+form.addEventListener("submit", event => { event.preventDefault(); navigate(address.value); });
+
+document.querySelectorAll("[data-url]").forEach(button => button.addEventListener("click", () => navigate(button.dataset.url)));
+
+document.getElementById("back").addEventListener("click", () => {
+ if (historyIndex > 0) { historyIndex--; navigate(historyList[historyIndex], false); }
+});
+
+document.getElementById("forward").addEventListener("click", () => {
+ if (historyIndex < historyList.length - 1) { historyIndex++; navigate(historyList[historyIndex], false); }
+});
+
+document.getElementById("refresh").addEventListener("click", () => { if (current) viewer.src = PROXY_BASE + encodeURIComponent(current); });
+
+document.getElementById("homeBtn").addEventListener("click", () => {
+ viewer.src = "about:blank"; browser.hidden = true;
+ document.getElementById("home").style.display = "";
+ document.getElementById("status").textContent = "Local browser shell";
+});
+
+document.getElementById("newTab").addEventListener("click", () => {
+ if (current) window.open(current, "_blank", "noopener");
+});
+
+document.getElementById("openExternal").addEventListener("click", () => {
+ if (current) window.open(current, "_blank", "noopener");
+});
+
+viewer.addEventListener("load", () => { blocked.hidden = true; });
